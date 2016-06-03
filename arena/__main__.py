@@ -1,0 +1,3 @@
+import arena
+
+arena.Arena()
