@@ -1,22 +1,23 @@
-import Queue
 import socket
+
+from clearing_queue import ClearingQueue
 from collections import deque
+from multiprocessing import Process
 
 
-class TwitchStream:
+class TwitchStream(Process):
 
     def __init__(self):
+        super(TwitchStream, self).__init__()
         print "starting message stream"
         self.oauth_token = 'oauth:yalia452t0539njju7go7bvrecwbkr'
         self.nick = 'wisotv'
         self.channel = 'wisotv'
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.queue = deque(maxlen=5)
+        self.queue = ClearingQueue(maxsize=5)
         connect_status = self.chat_connect()
         if not connect_status:
             raise KeyboardInterrupt
-
-        self.run()
 
     def __del__(self):
         print "closing message stream"
@@ -41,7 +42,7 @@ class TwitchStream:
         return True
 
     def run(self):
-        print "starting to process twitch messages"
+        print "starting to process twitch messages in separate thread"
         counter = 0
         timeouts = 0
         while True:
@@ -56,17 +57,18 @@ class TwitchStream:
                 for message in messages:
                     if message == 'PING :tmi.twitch.tv':
                         self.handle_ping()
-                    self.queue.append(message)
+                    self.queue.put(message, block=False)
 
                 print temp
-                counter += 1
-
-                if counter == 5:
-                    print "at 5 messages"
-                    print list(self.queue)
-                    counter = 0
+                # counter += 1
+                #
+                # if counter == 5:
+                #     print "at 5 messages"
+                #     print list(self.queue)
+                #     counter = 0
             except socket.timeout:
                 timeouts += 1
 
     def handle_ping(self):
-        self.socket.send("PING :tmi.twitch.tv\r\n")
+        print "received a ping..ponging!"
+        self.socket.send("PONG :tmi.twitch.tv\r\n")
