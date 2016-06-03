@@ -7,14 +7,14 @@ from multiprocessing import Process
 
 class TwitchStream(Process):
 
-    def __init__(self):
+    def __init__(self, queue):
         super(TwitchStream, self).__init__()
         print "starting message stream"
         self.oauth_token = 'oauth:yalia452t0539njju7go7bvrecwbkr'
         self.nick = 'wisotv'
         self.channel = 'wisotv'
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.queue = ClearingQueue(maxsize=5)
+        self.queue = queue
         connect_status = self.chat_connect()
         if not connect_status:
             raise KeyboardInterrupt
@@ -57,7 +57,8 @@ class TwitchStream(Process):
                 for message in messages:
                     if message == 'PING :tmi.twitch.tv':
                         self.handle_ping()
-                    self.queue.put(message, block=False)
+                        continue
+                    self.queue.put(message)
 
                 print temp
                 # counter += 1

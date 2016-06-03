@@ -13,4 +13,5 @@ class ClearingQueue(Queue.Queue):
                 print "queue empty exception"
                 pass
 
-        Queue.Queue.put(self, *args, **kwargs)
+        Queue.Queue.put(*args, **kwargs)
+

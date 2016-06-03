@@ -3,7 +3,7 @@ import time
 from controller import Button
 from controller import Controller
 from message_stream import TwitchStream
-from multiprocessing import Process
+from multiprocessing import Queue
 
 
 class Arena:
@@ -13,8 +13,11 @@ class Arena:
         try:
             print "Starting arena now, press ^C to stop the arena"
             self.gametick = 2
-            self.controller = Controller('/Users/PhilipHouse/Library/Application Support/Dolphin/Pipes/player1')
-            self.chat_stream = TwitchStream()
+            # self.controller = Controller('/Users/PhilipHouse/Library/Application Support/Dolphin/Pipes/player1')
+
+            self._thread_queue = Queue()
+
+            self.chat_stream = TwitchStream(self._thread_queue)
             self.chat_stream.start()
 
             self.run()
@@ -26,6 +29,7 @@ class Arena:
         print "now running"
         while True:
             time.sleep(self.gametick)
-            print list(self.chat_stream.queue.queue)
-            self.controller.hit_button(Button.A)
+            temp = self._thread_queue.get(block=False)
+            print temp
+            # self.controller.hit_button(Button.A)
 
