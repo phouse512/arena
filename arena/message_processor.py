@@ -3,6 +3,7 @@ import time
 import threading
 
 from collections import deque
+from controller import Button
 from multiprocessing import Process
 
 
@@ -26,8 +27,8 @@ class MessageProcessor(Process):
                 time.sleep(.1)
                 temp_message = self.message_queue.get(block=False)
                 # TODO add clean method to only put good messages
-                print "mp message: %s" % str(temp_message)
-                self.message_buffer.append(temp_message)
+                formatted = MessageProcessor.format_message(temp_message)
+                self.message_buffer.append(formatted)
                 print self.message_buffer
             except Queue.Empty:
                 # print "empty but still processing"
@@ -42,9 +43,31 @@ class MessageProcessor(Process):
             print "inside controller_action with message %s" % str(transfer_message)
             self.controller_queue.put(transfer_message, block=False)
         except IndexError as e:
-            print "empty message_queue %s" % str(e)
             pass
         finally:
             self.game_tick = threading.Timer(1.0, self.get_controller_action)
             self.game_tick.start()
             return self.game_tick
+
+    @staticmethod
+    def format_message(message):
+        text = message['message'].strip().lower()
+
+        selected_control = None
+        if text == 'press a':
+            selected_control = Button.A
+        elif text == 'press b':
+            selected_control = Button.B
+        elif text == 'press d up':
+            selected_control = Button.D_UP
+        elif text == 'press d down':
+            selected_control = Button.D_DOWN
+        elif text == 'press d right':
+            selected_control = Button.D_RIGHT
+        elif text == 'press d left':
+            selected_control = Button.D_LEFT
+
+        if selected_control:
+            message['control'] = selected_control
+
+        return message

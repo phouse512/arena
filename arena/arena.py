@@ -48,6 +48,8 @@ class Arena:
             # self.controller.hit_button(Button.A)
             try:
                 control = self._controller_queue.get(block=False)
+                if 'control' in control:
+                    self.controller.hit_button(control['control'])
                 print "receiving control: %s" % str(control)
             except Empty:
                 pass
