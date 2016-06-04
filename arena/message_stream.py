@@ -1,3 +1,4 @@
+import re
 import socket
 
 from clearing_queue import ClearingQueue
@@ -55,21 +56,38 @@ class TwitchStream(Process):
                 messages = filter(None, temp.split("\r\n"))
 
                 for message in messages:
+                    print "message in stream: %s" % str(message)
                     if message == 'PING :tmi.twitch.tv':
                         self.handle_ping()
                         continue
-                    self.queue.put(message)
+                    cleaned_message = TwitchStream.format_irc_message(message)
+                    self.queue.put(cleaned_message)
 
-                print temp
-                # counter += 1
-                #
-                # if counter == 5:
-                #     print "at 5 messages"
-                #     print list(self.queue)
-                #     counter = 0
             except socket.timeout:
                 timeouts += 1
 
     def handle_ping(self):
         print "received a ping..ponging!"
         self.socket.send("PONG :tmi.twitch.tv\r\n")
+
+    @staticmethod
+    def format_irc_message(irc_message):
+        """
+        :param irc_message: ex: :wisotv!wisotv@wisotv.tmi.twitch.tv PRIVMSG #wisotv :test chat
+        :return:
+        """
+        pattern = r'^:(\w+)!\w.[^:]+:(.*)$'
+        result = re.search(pattern, irc_message)
+        if result:
+            # print result.groups()
+
+            return {
+                'user': result.groups()[0],
+                'message': result.groups()[1]
+            }
+        else:
+            return {
+                'user': 'N/A',
+                'message': irc_message
+            }
+
