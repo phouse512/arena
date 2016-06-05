@@ -4,6 +4,8 @@ import threading
 
 from collections import deque
 from controller import Button
+from controller import Direction
+from controller import Stick
 from multiprocessing import Process
 
 
@@ -45,7 +47,7 @@ class MessageProcessor(Process):
         except IndexError as e:
             pass
         finally:
-            self.game_tick = threading.Timer(1.0, self.get_controller_action)
+            self.game_tick = threading.Timer(.3, self.get_controller_action)
             self.game_tick.start()
             return self.game_tick
 
@@ -54,20 +56,50 @@ class MessageProcessor(Process):
         text = message['message'].strip().lower()
 
         selected_control = None
-        if text == 'press a':
+        if text in ['press a', 'a']:
             selected_control = Button.A
-        elif text == 'press b':
+        elif text in ['press b', 'b']:
             selected_control = Button.B
-        elif text == 'press d up':
+        elif text in ['press d up', 'd up']:
             selected_control = Button.D_UP
-        elif text == 'press d down':
+        elif text in ['press d down', 'd down']:
             selected_control = Button.D_DOWN
-        elif text == 'press d right':
+        elif text in ['press d right', 'd right']:
             selected_control = Button.D_RIGHT
-        elif text == 'press d left':
+        elif text in ['press d left', 'd left']:
             selected_control = Button.D_LEFT
-        elif text == 'press start':
+        elif text in ['press start', 'start']:
             selected_control = Button.START
+        elif text in ['press x', 'x']:
+            selected_control = Button.X
+        elif text in ['press y', 'y']:
+            selected_control = Button.Y
+        elif text in ['press z', 'z']:
+            selected_control = Button.Z
+        elif text == 'left':
+            selected_control = Stick.MAIN
+            message['direction'] = Direction.LEFT
+        elif text == 'right':
+            selected_control = Stick.MAIN
+            message['direction'] = Direction.RIGHT
+        elif text == 'up':
+            selected_control = Stick.MAIN
+            message['direction'] = Direction.UP
+        elif text == 'down':
+            selected_control = Stick.MAIN
+            message['direction'] = Direction.DOWN
+        elif text == 'up left':
+            selected_control = Stick.MAIN
+            message['direction'] = Direction.UP_LEFT
+        elif text == 'up right':
+            selected_control = Stick.MAIN
+            message['direction'] = Direction.UP_RIGHT
+        elif text == 'down left':
+            selected_control = Stick.MAIN
+            message['direction'] = Direction.DOWN_LEFT
+        elif text == 'down right':
+            selected_control = Stick.MAIN
+            message['direction'] = Direction.DOWN_RIGHT
 
         if selected_control:
             message['control'] = selected_control

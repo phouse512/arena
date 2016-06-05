@@ -16,7 +16,7 @@ class Arena:
         try:
             print "Starting arena now, press ^C to stop the arena"
             self.gametick = 2
-            self.controller = Controller('/Users/PhilipHouse/Library/Application Support/Dolphin/Pipes/player1')
+            self.controller = Controller('/Users/philhouse/Library/Application Support/Dolphin/Pipes/player1')
 
             self._message_queue = Queue()
             self._controller_queue = Queue()
@@ -48,7 +48,13 @@ class Arena:
             # self.controller.hit_button(Button.A)
             try:
                 control = self._controller_queue.get(block=False)
-                if 'control' in control:
+                if 'direction' in control:
+                    self.controller.tilt_control(
+                        control['control'],
+                        control['direction']
+                    )
+
+                elif 'control' in control:
                     self.controller.hit_button(control['control'])
                 print "receiving control: %s" % str(control)
             except Empty:
