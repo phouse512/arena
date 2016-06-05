@@ -66,6 +66,8 @@ class MessageProcessor(Process):
             selected_control = Button.D_RIGHT
         elif text == 'press d left':
             selected_control = Button.D_LEFT
+        elif text == 'press start':
+            selected_control = Button.START
 
         if selected_control:
             message['control'] = selected_control
