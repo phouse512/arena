@@ -59,11 +59,3 @@ class Arena:
                 print "receiving control: %s" % str(control)
             except Empty:
                 pass
-
-    def fetch_action(self):
-        print "fetch action is called"
-
-        self.message_processor.get_controller_action()
-        self.game_tick = threading.Timer(1.0, self.fetch_action)
-        self.game_tick.start()
-        return self.game_tick
