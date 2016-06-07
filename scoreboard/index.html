@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+    <head>
+        <title>twitch plays animal crossing</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    </head>
+    <body>
+        <h1>Top Contributors</h1>
+        <ul id="messages">
+            <li>phouse512 - <span class="count">51</span></li>
+            <li>wisotv - <span class="count">23</span></li>
+        </ul>
+        <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+        <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+        <script>
+            var socket = io();
+            socket.on('updateContributions', function(data) {
+                console.log(data);
+            });
+        </script>
+    </body>
+</html>

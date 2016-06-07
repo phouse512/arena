@@ -1,0 +1,23 @@
+{
+  "name": "arena",
+  "version": "1.0.0",
+  "description": "crowd-sourced gamecube gaming",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/phouse512/arena.git"
+  },
+  "author": "phouse512",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/phouse512/arena/issues"
+  },
+  "homepage": "https://github.com/phouse512/arena",
+  "dependencies": {
+    "express": "^4.10.2",
+    "socket.io": "^1.4.6"
+  }
+}
