@@ -17,7 +17,7 @@ class Arena:
         try:
             print "Starting arena now, press ^C to stop the arena"
             self.gametick = 2
-            self.controller = Controller('/Users/PhilipHouse/Library/Application Support/Dolphin/Pipes/player1')
+            self.controller = Controller('/Users/philhouse/Library/Application Support/Dolphin/Pipes/player1')
 
             self._message_queue = Queue()
             self._controller_queue = Queue()

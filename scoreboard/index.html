@@ -13,9 +13,14 @@
         <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
         <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
         <script>
-            var socket = io();
-            socket.on('updateContributions', function(data) {
-                console.log(data);
+            var socket = io('http://localhost:3000');
+            socket.on('update', function(data) {
+                scoreArray = [];
+                for (var key in data.data) {
+                    if (data.data.hasOwnProperty(key)) {
+                        
+                    }
+                }
             });
         </script>
     </body>
