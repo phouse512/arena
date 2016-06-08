@@ -1,8 +1,6 @@
 import re
 import socket
 
-from clearing_queue import ClearingQueue
-from collections import deque
 from multiprocessing import Process
 
 

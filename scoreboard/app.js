@@ -1,13 +1,17 @@
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var bodyParser = require('body-parser');
+
+app.use(bodyParser());
 
 app.get('/', function(req, res) {
     res.sendFile(__dirname + '/index.html');
 });
 
 app.post('/update_contributors', function(req, res) {
-    res.send(req);
+    console.log(req.body);
+    res.send("hi");
 });
 
 io.on('connection', function(socket) {

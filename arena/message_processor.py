@@ -31,7 +31,6 @@ class MessageProcessor(Process):
                 # TODO add clean method to only put good messages
                 formatted = MessageProcessor.format_message(temp_message)
                 self.message_buffer.append(formatted)
-                print self.message_buffer
             except Queue.Empty:
                 # print "empty but still processing"
                 # print self.message_buffer

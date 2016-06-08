@@ -1,8 +1,9 @@
-import time
+import json
+import requests
 import threading
+import time
 from Queue import Empty
 
-from controller import Button
 from controller import Controller
 from message_processor import MessageProcessor
 from message_stream import TwitchStream
@@ -16,7 +17,7 @@ class Arena:
         try:
             print "Starting arena now, press ^C to stop the arena"
             self.gametick = 2
-            self.controller = Controller('/Users/philhouse/Library/Application Support/Dolphin/Pipes/player1')
+            self.controller = Controller('/Users/PhilipHouse/Library/Application Support/Dolphin/Pipes/player1')
 
             self._message_queue = Queue()
             self._controller_queue = Queue()
@@ -29,17 +30,21 @@ class Arena:
                 self._message_queue
             )
 
+            # initialize contributions dictionary
+            self.contributions = {}
+
             self.message_processor.start()
             self.chat_stream.start()
 
-            # self.game_tick = self.fetch_action()
+            # initialize requests call to update web and begin processing controls
+            self.scoreboard_update = self.update_web()
             self.run()
 
         except KeyboardInterrupt:
             print "Stopped"
             self.message_processor.join()
             self.chat_stream.join()
-            # self.game_tick.cancel()
+            self.scoreboard_update.join()
 
     def run(self):
         print "now running"
@@ -57,5 +62,21 @@ class Arena:
                 elif 'control' in control:
                     self.controller.hit_button(control['control'])
                 print "receiving control: %s" % str(control)
+                self.contributions[control['user']] = self.contributions.get(control['user'], 0) + 1
             except Empty:
                 pass
+
+    def update_web(self):
+        """
+        a method used for updating the web scoreboard with the current contributions
+        :return: reference to timer object
+        """
+        headers = {'Content-Type': 'application/json'}
+        print "inside update web"
+        resp = requests.post('http://localhost:3000/update_contributors',
+                             data=json.dumps(self.contributions),
+                             timeout=1, headers=headers)
+        print resp
+        self.scoreboard_update = threading.Timer(2, self.update_web)
+        self.scoreboard_update.start()
+        return self.scoreboard_update
