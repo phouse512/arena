@@ -13,14 +13,31 @@
         <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
         <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
         <script>
+            function sortSecondColumn(a, b) {
+                if (a[1] === b[1]) {
+                    return 0;
+                } else {
+                    return (a[1] < b[1]) ? 1 : -1;
+                }
+            }
             var socket = io('http://localhost:3000');
             socket.on('update', function(data) {
+                console.log(data.data);
                 scoreArray = [];
                 for (var key in data.data) {
                     if (data.data.hasOwnProperty(key)) {
-                        
+                        scoreArray.push([key, data.data[key]]);                        
                     }
                 }
+
+                scoreArray = scoreArray.sort(sortSecondColumn);
+                var htmlString = "";
+                for(var i=0; i++; i < scoreArray.length) {
+                    console.log(scoreArray[i]);
+                    htmlString += "<li>" + scoreArray[i][0] + " - <span class='count'>" + scoreArray[i][1] + "</span></li>";
+                }
+                console.log(htmlString);
+                $("#messages").html(htmlString);
             });
         </script>
     </body>
