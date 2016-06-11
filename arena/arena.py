@@ -30,8 +30,9 @@ class Arena:
                 self._message_queue
             )
 
-            # initialize contributions dictionary
+            # initialize contributions dictionary and last updates array
             self.contributions = {}
+            self.latest_inputs = []
 
             self.message_processor.start()
             self.chat_stream.start()
@@ -53,16 +54,20 @@ class Arena:
             # self.controller.hit_button(Button.A)
             try:
                 control = self._controller_queue.get(block=False)
+                input = ''
                 if 'direction' in control:
                     self.controller.tilt_control(
                         control['control'],
                         control['direction']
                     )
+                    input = str(control['control']) + ' ' + str(control['direction'])
 
                 elif 'control' in control:
                     self.controller.hit_button(control['control'])
+                    input = str(control['control'])
                 print "receiving control: %s" % str(control)
                 self.contributions[control['user']] = self.contributions.get(control['user'], 0) + 1
+                self.latest_inputs.append({'user': control['user'], 'input': input})
             except Empty:
                 pass
 
@@ -73,10 +78,16 @@ class Arena:
         """
         headers = {'Content-Type': 'application/json'}
         print "inside update web"
+
+        data_blob = {
+            'top_contributors': self.contributions,
+            'latest_inputs': self.latest_inputs
+        }
         resp = requests.post('http://localhost:3000/update_contributors',
-                             data=json.dumps(self.contributions),
+                             data=json.dumps(data_blob),
                              timeout=1, headers=headers)
         print resp
+        self.latest_inputs = []
         self.scoreboard_update = threading.Timer(2, self.update_web)
         self.scoreboard_update.start()
         return self.scoreboard_update

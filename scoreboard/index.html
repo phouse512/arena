@@ -4,11 +4,15 @@
         <title>twitch plays animal crossing</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     </head>
-    <body>
-        <h1>Top Contributors</h1>
+    <body style="background-color: black; font-family: Courier;">
+        <h3 style="color: white;">Top Contributors</h1>
         <ul id="messages">
-            <li>phouse512 - <span class="count">51</span></li>
             <li>wisotv - <span class="count">23</span></li>
+        </ul>
+        <hr>
+        <h4 style="color: white;">Latest Inputs</h4>
+        <ul id="inputs">
+            
         </ul>
         <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
         <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
@@ -20,24 +24,45 @@
                     return (a[1] < b[1]) ? 1 : -1;
                 }
             }
+
+            function displayLatestMessages(newestMessages) {
+                console.log('newestMessages:' + newestMessages);
+                for(var i=0; i < newestMessages.length; i++) { 
+                    if(latestMessages.length > 5) {
+                        latestMessages.shift();    
+                    }
+                    latestMessages.push(newestMessages[i]);
+                }
+                htmlString = "";
+                for(var i=0; i<latestMessages.length; i++) {
+                    htmlString += "<li style='color: white;'>" + latestMessages[i].user + " - " + latestMessages[i].input;  
+                }
+                $("#inputs").html(htmlString);
+            }
+            latestMessages = [];
             var socket = io('http://localhost:3000');
             socket.on('update', function(data) {
                 console.log(data.data);
                 scoreArray = [];
-                for (var key in data.data) {
-                    if (data.data.hasOwnProperty(key)) {
-                        scoreArray.push([key, data.data[key]]);                        
+                for (var key in data.data.top_contributors) {
+                    if (data.data.top_contributors.hasOwnProperty(key)) {
+                        scoreArray.push([key, data.data.top_contributors[key]]);                        
                     }
                 }
+                console.log("presort: " + scoreArray);
 
                 scoreArray = scoreArray.sort(sortSecondColumn);
+                console.log("scoreArray:" + scoreArray);
                 var htmlString = "";
-                for(var i=0; i++; i < scoreArray.length) {
+                console.log("scoreArrayLength: " + scoreArray.length);
+                for(var i=0; i < scoreArray.length; i++) {
                     console.log(scoreArray[i]);
-                    htmlString += "<li>" + scoreArray[i][0] + " - <span class='count'>" + scoreArray[i][1] + "</span></li>";
+                    htmlString += "<li style='color: white;'>" + scoreArray[i][0] + " - <span class='count'>" + scoreArray[i][1] + "</span></li>";
                 }
                 console.log(htmlString);
                 $("#messages").html(htmlString);
+
+                displayLatestMessages(data.data.latest_inputs);
             });
         </script>
     </body>

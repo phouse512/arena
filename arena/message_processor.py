@@ -30,7 +30,8 @@ class MessageProcessor(Process):
                 temp_message = self.message_queue.get(block=False)
                 # TODO add clean method to only put good messages
                 formatted = MessageProcessor.format_message(temp_message)
-                self.message_buffer.append(formatted)
+                if 'control' in formatted:
+                    self.message_buffer.append(formatted)
             except Queue.Empty:
                 # print "empty but still processing"
                 # print self.message_buffer
